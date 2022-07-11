@@ -1,7 +1,8 @@
-Interessanter Code: app/Http/Controllers
-
-
-
+Interessanter Code: 
+- app/Http/Controllers
+- routes/CSVDownload.php
+- resources/js/index.blade.php
+- public/files/ CsvDateien
 
 
 
