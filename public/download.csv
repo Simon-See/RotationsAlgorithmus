@@ -1,0 +1,34 @@
+Interviewee,ErstInterviewer*in,ZweitInterviewer*in,Protokollant*in,PriorityNumber
+" "," "," "," "," "
+" "," "," "," "," "
+"New Day",___,___,___,___
+" "," "," "," "," "
+"New Slot",,,,
+A,FF,GG,EE,1726
+NULL,NULL,NULL,NULL,-3
+" "," "," "," "," "
+"New Slot",,,,
+B,DD,FF,AA,3026
+Null,NULL,NULL,NULL,-3
+" "," "," "," "," "
+"New Slot",,,,
+NULL,NULL,NULL,NULL,-3
+NULL,NULL,NULL,NULL,-3
+" "," "," "," "," "
+"New Slot",,,,
+C,GG,DD,BB,2626
+NULL,NULL,NULL,NULL,-3
+" "," "," "," "," "
+" "," "," "," "," "
+"New Day",___,___,___,___
+" "," "," "," "," "
+"New Slot",,,,
+NULL,NULL,NULL,NULL,-3
+NULL,NULL,NULL,NULL,-3
+" "," "," "," "," "
+" "," "," "," "," "
+"New Day",___,___,___,___
+" "," "," "," "," "
+"New Slot",,,,
+NULL,NULL,NULL,NULL,-3
+NULL,NULL,NULL,NULL,-3
