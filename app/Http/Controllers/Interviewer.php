@@ -26,7 +26,7 @@ class Interviewer
     var Collection $bolZugewieseneZeitslots;
     var int $id;
     var int $anzInterviewsAnAktuellenTag = 0;
-
+    var Collection $anzInterviewsMitAnderen;
 
     public function __construct(int $id_, string $name_, bool $istErfahren_, bool $istSemiErfahren_, bool $istUnerfahren_, bool $weiblich_, bool $istITler_, int $Studienrichtung_,  Collection $kannBeiZeitslot_,Collection $emptyArrayZugewieseneZeitslots)
     {
@@ -52,6 +52,15 @@ class Interviewer
                 $this->bolZugewieseneZeitslots[$x][$i] = false;
             }
         }
+
+
+
+
+    }
+
+    function createArrAnzInterviewsMitAnderen(int $anzInterviewerGesamt){
+        $this->anzInterviewsMitAnderen = collect()->pad($anzInterviewerGesamt, 0);
+
     }
 
     function wieVieleZeitslotsKannPersonNoch(int $day, int $slotOfDay): int
@@ -122,6 +131,9 @@ class Interviewer
             }
         }
         return $returnValue;
+
+
+
 
 
     }
