@@ -46,6 +46,16 @@ class Rotationsplan extends Controller
 
         $interviewerInnen = $this->createInterviewerORInterviewees($pathToInterviewer, true, $metaDaten[0], $metaDaten[1], $metaDaten[2]);
 
+        for ($h = 0; $h < count($interviewerInnen); $h++) {
+            /** @var Interviewer $curInterviewer */
+            $curInterviewer = $interviewerInnen[$h];
+            $curInterviewer->createArrAnzInterviewsMitAnderen( count($interviewerInnen));
+            print("anzInterviewers mit anderen: ");
+            print($curInterviewer->anzInterviewsMitAnderen);
+            print("<br>");
+        }
+
+
         $arrayOfIntererviewees = $this->createInterviewerORInterviewees($pathToInterviewees, false, $metaDaten[0], $metaDaten[1], $metaDaten[2]);
 
         return $this->rotationsPlanErstellen($arrayOfIntererviewees, collect([$metaDaten[0], $metaDaten[1], $metaDaten[2]]), $interviewerInnen, $metaDaten[3]);
@@ -56,7 +66,7 @@ class Rotationsplan extends Controller
     function createInterviewerORInterviewees(string $filename, bool $creatingInterviewerATM, $anzSlotsFr, $anzSlotsSa, $anzSlotsSo): Collection
     {
         $resultingCollection = new Collection();
-        $counter = 1;
+        $counter = 0;
         $isItStartRow = true;
         if (($csv_file = fopen($filename, "r")) !== false) {
             while (($arr = fgetcsv($csv_file, 1000, ";")) !== false) {
@@ -243,6 +253,16 @@ class Rotationsplan extends Controller
                                             if ($erstInt->interviewer->istITler && $zweitInt->interviewer->istITler)
                                                 $combination->prioirityNumber = $combination->prioirityNumber / 2;
 
+                                            //Wenn Interviewer bereits Interview miteinander -> abzüge
+                                            $combination->prioirityNumber = $combination->prioirityNumber - ((int)$erstInt->interviewer->anzInterviewsMitAnderen[$zweitInt->interviewer->id])*((int)$erstInt->interviewer->anzInterviewsMitAnderen[$zweitInt->interviewer->id])*100; //TODO Faktor
+                                            $combination->prioirityNumber = $combination->prioirityNumber - ((int)$erstInt->interviewer->anzInterviewsMitAnderen[$drittInt->interviewer->id]) * ((int)$erstInt->interviewer->anzInterviewsMitAnderen[$drittInt->interviewer->id])*100; //TODO Faktor
+                                            $combination->prioirityNumber = $combination->prioirityNumber - ((int)$zweitInt->interviewer->anzInterviewsMitAnderen[$drittInt->interviewer->id])*((int)$zweitInt->interviewer->anzInterviewsMitAnderen[$drittInt->interviewer->id])*100; //TODO Faktor
+
+                                            print("combination: " );
+                                            print($combination);
+                                            print (" prio Num: " );
+                                            print($combination->prioirityNumber);
+                                            print("<br>");
                                             //kombination hinzufügen:
                                             $besteKombinationen[] = $combination;
                                             ////print(", len: " . count($besteKombinationen));
@@ -309,6 +329,16 @@ class Rotationsplan extends Controller
                         }
                     }
 
+                    print("______________ausgewählteKombi:_____________<br>");
+                    print($ausgewaehlteKombination);
+                    print("<br>day:");
+                    print($day);
+                    print(" slot: ");
+                    print($slot);
+                    print(" room: ");
+                    print($roomNum);
+                    print("<br>___");
+
                     //Nun haben wir eine Beste Kombination und füllen diese in das ZeitslotArray
                     $newZeitslot = new Zeitslot($day, $slot, $roomNum);
                     $newZeitslot->interviewerCombination = $ausgewaehlteKombination;
@@ -333,6 +363,25 @@ class Rotationsplan extends Controller
                         $tempInterviewer->interviewer->anzInterviewsAnAktuellenTag++;
                         $tempInterviewer->interviewer->erfahrungsStufeUpdaten();
                     }
+
+                    //anz Miteinander Interviewed erhöhen:
+                    print("davor:");
+                    print($ausgewaehlteKombination->erst->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->zweit->interviewer->id]);
+                    print("<br>");
+                    /** @var Interviewer $tempInterviewer*/
+                    $tempInterviewer = $interviewer[$ausgewaehlteKombination->erst->interviewer->id];
+                    //$tempInterviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->zweit->interviewer->id] += 1;
+                    $ausgewaehlteKombination->erst->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->zweit->interviewer->id] += 1;
+                    $ausgewaehlteKombination->erst->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->protokoll->interviewer->id] += 1;
+                    $ausgewaehlteKombination->zweit->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->erst->interviewer->id] += 1;
+                    $ausgewaehlteKombination->erst->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->protokoll->interviewer->id] += 1;
+                    $ausgewaehlteKombination->protokoll->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->erst->interviewer->id] += 1;
+                    $ausgewaehlteKombination->protokoll->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->zweit->interviewer->id] += 1;
+
+                    print("danach:");
+                    print($ausgewaehlteKombination->erst->interviewer->anzInterviewsMitAnderen[$ausgewaehlteKombination->zweit->interviewer->id]);
+                    print("<br>");
+
 
                     //Put the array back into the heaps for the loop to work:
                     for ($s = 0; $s < 6; $s++) {
@@ -417,11 +466,40 @@ class Rotationsplan extends Controller
         }
 
 
+
+        fputcsv($csvFile,[""]);
+        fputcsv($csvFile,[""]);
+
+        /** Wie oft hat jeder Interviewer Miteinander interviewed */
+        fputcsv($csvFile,["Wie oft hat jeder Interviewer Miteinander interviewed"]);
+        fputcsv($csvFile,[""]);
+
+        fputcsv($csvFile,["Anzahl","Name1","Name2"]);
+
+        for ($i = 0; $i < count($interviewer); $i++) {
+            /** @var Interviewer $curI */
+            $curI = $interviewer[$i];
+
+            for ($j = 0; $j < $i; $j++) {
+                /** @var Interviewer $curJ */
+                $curJ = $interviewer[$j];
+                if($curI->anzInterviewsMitAnderen[$curJ->id] >0)
+                {
+                    fputcsv($csvFile,[$curI->anzInterviewsMitAnderen[$curJ->id], $curI->name,$curJ->name]);
+                }
+            }
+        }
+
+
+
         //replace all " in the csv file with blanks
         $csvContent = file_get_contents("RotationsPlan.csv");
         $csvContent = str_replace('"','',$csvContent);
         $csvContent = str_replace(',',';',$csvContent);
         file_put_contents("RotationsPlan.csv",$csvContent);
+
+
+
 
         //TODO abklären, ob protokollant gleicher Studiengang reicht
         //TODO und wie die "Optimale verteilung für Erfahrene / Semierfahrene und Unerfahrene ist
