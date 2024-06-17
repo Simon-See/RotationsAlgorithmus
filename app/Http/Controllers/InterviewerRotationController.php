@@ -286,7 +286,7 @@ class InterviewerRotationController extends Controller
              * @var Interview[] $bestInterviewCombinations
              */
             $bestInterviewCombinations = [];
-            $lowestHighestPrioNum = PHP_INT_MIN;
+            $lowestHighestPrioNum = PHP_INT_MIN; //the prio num that is the minimum one of the prio nums of the bestInterviewCombinations
 
             foreach ($allInterviewCombinations as $n => $interviewCombination) {
                 $interviewCombination->calculatePrioNum($day, $i, $anzSlotsFreitag, $anzSlotsSamstag, $anzSlotsSonntag, $anzRaeume, $numInterviewer);
@@ -307,7 +307,7 @@ class InterviewerRotationController extends Controller
                 }
             }
 
-            //TODO änderung des Codes hin zu jeden Raum einzelnd ODER alle RaumCombis durchgehen...
+            //TODO änderung des Codes hin zu jeden Raum einzelnd ODER alle RaumCombis durchgehen?
             //TODO ausrechnen wie viele Slots wir unbedingt brauchen, damit Applicants noch einen Slot bekommen
 
             $lowestHighestPrioNum = PHP_INT_MIN;
