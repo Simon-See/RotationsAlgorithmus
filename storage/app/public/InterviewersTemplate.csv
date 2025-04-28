@@ -1,0 +1,2 @@
+Vorname;Nachname;IstTechie;IstWeiblich;Freitag;Samstag;Sonntag;StudiengangsrichtungID;ErfahrungsGrad
+string;string;boolean;boolean;boolean;boolean;boolean;integer;integer -> 3 erfahren, 2 Semierfahren, 1 Unerfahren
