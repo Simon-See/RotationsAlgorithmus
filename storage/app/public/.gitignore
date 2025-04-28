@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# Allow specific files
+!ApplicantsTemplate.csv
+!InterviewersTemplate.csv
+
+# Ensure .gitignore itself is not ignored
+!.gitignore
