@@ -287,9 +287,10 @@ class InterviewerRotationController extends Controller
              */
             $bestInterviewCombinations = [];
             $lowestHighestPrioNum = PHP_INT_MIN; //the prio num that is the minimum one of the prio nums of the bestInterviewCombinations
-
             foreach ($allInterviewCombinations as $n => $interviewCombination) {
                 $interviewCombination->calculatePrioNum($day, $i, $anzSlotsFreitag, $anzSlotsSamstag, $anzSlotsSonntag, $anzRaeume, $numInterviewer);
+                //Log::info("currentCombination First interviewer and applicant: " . $interviewCombination->interviewer1->getFirstName() . "_" . $interviewCombination->applicant->getFirstName());
+
                 if ($interviewCombination->prioNumber > $lowestHighestPrioNum) {
                     $arr = $this->removeCombinationsWithSameParticipantsIfNecessary($interviewCombination, $bestInterviewCombinations);
                     if(!$arr[1])
@@ -361,7 +362,7 @@ class InterviewerRotationController extends Controller
         $newBestInterviewCombinations = [];
         $isHigherThanCombinationsThatWouldHaveToBeRemoved = true;
 
-
+        //Log:info("Best InterviewCombinations: " . json_encode($bestInterviewCombinations));
         foreach ($bestInterviewCombinations as $bestCombination) {
             if ($curCombination->hasSameParticipants($bestCombination)) {
                 $isHigherThanCombinationsThatWouldHaveToBeRemoved = $isHigherThanCombinationsThatWouldHaveToBeRemoved && $bestCombination->prioNumber < $curCombination->prioNumber;
